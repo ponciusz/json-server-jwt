@@ -7,6 +7,12 @@ Fake REST based on https://github.com/typicode/json-server with some extra funct
 
 Remember that refresh tokens are stored in memory every time you will restart app or do any changes when `nodemon` is running it will invalidate all refresh tokens.
 
+## How to start
+
+
+`git clone git@github.com:ponciusz/json-server-jwt.git`
+`yarn install`
+`yarn start`
 
 ## Get token
 
