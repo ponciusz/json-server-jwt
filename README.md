@@ -1,4 +1,4 @@
-#json-server-jwt
+# json-server-jwt
 
 Fake REST based on https://github.com/typicode/json-server with some extra functionality like:
 
@@ -41,7 +41,7 @@ Authorization: Bearer YOUR_TOKEN
   "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGVtYWlsLmNvbSIsInBhc3N3b3JkIjoiYWRtaW4iLCJpYXQiOjE1NDA4MzA2NDQsImV4cCI6MTU0MDkxNzA0NH0.REaPgw8nRlYZIaMFZ0--9fn79-ba9NITHsC--bgbp1Q"
 }
 ```
-### Response
+Response:
 ```
 {
     "token": YOUR_REFRESHED_TOKEN
@@ -55,7 +55,7 @@ Host: localhost:3000
 Content-Type: application/json
 Authorization: Bearer YOUR_TOKEN
 ```
-### Response
+Response:
 ```
 {
     "token": YOUR_REFRESHED_TOKEN
