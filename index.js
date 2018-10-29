@@ -3,6 +3,9 @@ const bodyParser = require("body-parser");
 const jsonServer = require("json-server");
 const jwt = require("jsonwebtoken");
 
+const config = require("./config");
+const tokenList = {};
+
 const server = jsonServer.create();
 const router = jsonServer.router("./database.json");
 const userdb = JSON.parse(fs.readFileSync("./users.json", "UTF-8"));
@@ -11,26 +14,18 @@ server.use(bodyParser.urlencoded({ extended: true }));
 server.use(bodyParser.json());
 server.use(jsonServer.defaults());
 
-const SECRET_KEY = "123456789";
-
-const expiresIn = "1h";
-
-// Create a token from a payload
-function createToken(payload) {
-  return jwt.sign(payload, SECRET_KEY, { expiresIn });
-}
-
 // Verify the token
-// function verifyToken(token) {
-//   jwt.verify(token, SECRET_KEY, function(err, decoded) {
-//     if (err) {
-//       console.log(err);
-//       return err;
-//     }
-//     console.log(decoded.email);
-//     return decoded.email;
-//   });
-// }
+function verifyToken(token, res, next) {
+  jwt.verify(token, config.SECRET_KEY, function(err, decoded) {
+    if (err) {
+      return res.status(401).json({
+        status: 401,
+        message: err.message
+      });
+    }
+    return next();
+  });
+}
 
 // Check if the user exists in database
 function isAuthenticated({ email, password }) {
@@ -42,15 +37,56 @@ function isAuthenticated({ email, password }) {
 }
 
 server.post("/auth/login", (req, res) => {
-  const { email, password } = req.body;
-  if (isAuthenticated({ email, password }) === false) {
+  const postData = req.body;
+  const user = {
+    email: postData.email,
+    password: postData.password
+  };
+
+  if (isAuthenticated(user) === false) {
     const status = 401;
     const message = "Incorrect email or password";
     res.status(status).json({ status, message });
     return;
   }
-  const access_token = createToken({ email, password });
-  res.status(200).json({ access_token, email  });
+
+  const accessToken = jwt.sign(user, config.SECRET_KEY, {
+    expiresIn: config.TOKEN_LIFE
+  });
+  const refreshToken = jwt.sign(user, config.REFRESH_SECRET_KEY, {
+    expiresIn: config.REFRESH_TOKEN_LIFE
+  });
+
+  const response = {
+    accessToken,
+    refreshToken,
+    email: user.email
+  };
+
+  tokenList[refreshToken] = response;
+  res.status(200).json(response);
+});
+
+server.post("/auth/token", (req, res) => {
+  const postData = req.body;
+
+  if (postData.refreshToken && postData.refreshToken in tokenList) {
+    const user = {
+      email: postData.email,
+      name: postData.name
+    };
+    const token = jwt.sign(user, config.SECRET_KEY, {
+      expiresIn: config.TOKEN_LIFE
+    });
+    const response = {
+      token: token
+    };
+    // update the token in the list
+    tokenList[postData.refreshToken].token = token;
+    res.status(200).json(response);
+  } else {
+    res.status(404).send("Invalid request");
+  }
 });
 
 server.use(/^(?!\/auth).*$/, (req, res, next) => {
@@ -64,24 +100,11 @@ server.use(/^(?!\/auth).*$/, (req, res, next) => {
     return;
   }
 
-  jwt.verify(req.headers.authorization.split(" ")[1], SECRET_KEY, function(
-    err,
-    decoded
-  ) {
-    if (err) {
-      console.log(err);
-      const status = 401;
-      const message = "Error access_token is revoked";
-      res.status(status).json({ status, message });
-    }
-    console.log('Auth as: ',decoded.email);
-    next();
-  });
-
+  verifyToken(req.headers.authorization.split(" ")[1], res, next);
 });
 
 server.use(router);
 
-server.listen(3000, () => {
-  console.log("Run Auth API Server");
+server.listen(config.PORT, () => {
+  console.log(`Json Server JWT running at: http://localhost:${config.PORT}`);
 });
