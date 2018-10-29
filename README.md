@@ -11,7 +11,9 @@ Remember that refresh tokens are stored in memory every time you will restart ap
 
 
 `git clone git@github.com:ponciusz/json-server-jwt.git`
+
 `yarn install`
+
 `yarn start`
 
 ## Get token
