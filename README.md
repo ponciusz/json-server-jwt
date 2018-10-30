@@ -44,8 +44,6 @@ Host: localhost:3000
 Authorization: Bearer YOUR_TOKEN
 
 {
-  "email": "admin@email.com",
-  "password":"admin",
   "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGVtYWlsLmNvbSIsInBhc3N3b3JkIjoiYWRtaW4iLCJpYXQiOjE1NDA4MzA2NDQsImV4cCI6MTU0MDkxNzA0NH0.REaPgw8nRlYZIaMFZ0--9fn79-ba9NITHsC--bgbp1Q"
 }
 ```
@@ -66,6 +64,39 @@ Authorization: Bearer YOUR_TOKEN
 Response:
 ```
 {
-    "token": YOUR_REFRESHED_TOKEN
+    [
+        {
+            "id": 1,
+            "name": "Product001",
+            "cost": 10.0,
+            "quantity": 1000,
+            "locationId" : 1,
+            "familyId" : 1
+        },
+        {
+            "id": 2,
+            "name": "Product002",
+            "cost": 20.0,
+            "quantity": 2000,
+            "locationId" : 1,
+            "familyId" : 2
+        },   
+        {
+            "id": 3,
+            "name": "Product003",
+            "cost": 30.0,
+            "quantity": 3000,
+            "locationId" : 3,
+            "familyId" : 2     
+        },
+        {
+            "id": 4,
+            "name": "Product004",
+            "cost": 40.0,
+            "quantity": 4000,
+            "locationId" : 2,
+            "familyId" : 3
+        }
+    ]
 }
 ```
