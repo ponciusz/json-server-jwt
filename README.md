@@ -41,7 +41,6 @@ Response:
 ```
 POST /auth/token HTTP/1.1
 Host: localhost:3000
-Authorization: Bearer YOUR_TOKEN
 
 {
   "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGVtYWlsLmNvbSIsInBhc3N3b3JkIjoiYWRtaW4iLCJpYXQiOjE1NDA4MzA2NDQsImV4cCI6MTU0MDkxNzA0NH0.REaPgw8nRlYZIaMFZ0--9fn79-ba9NITHsC--bgbp1Q"
