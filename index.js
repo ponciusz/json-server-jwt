@@ -10,13 +10,20 @@ const server = jsonServer.create();
 const router = jsonServer.router("./database.json");
 const userdb = JSON.parse(fs.readFileSync("./users.json", "UTF-8"));
 
+// # generate private key
+// openssl genrsa -out private.pem 2048
+// # extatract public key from it
+// openssl rsa -in private.pem -pubout > public.pem
+const privateCert = fs.readFileSync('private.pem');
+const publicCert = fs.readFileSync('public.pem');
+
 server.use(bodyParser.urlencoded({ extended: true }));
 server.use(bodyParser.json());
 server.use(jsonServer.defaults());
 
 // Verify the token
 function verifyToken(token, res, next) {
-  jwt.verify(token, config.SECRET_KEY, function(err, decoded) {
+  jwt.verify(token, publicCert, function(err, decoded) {
     if (err) {
       return res.status(401).json({
         status: 401,
@@ -50,10 +57,12 @@ server.post("/auth/login", (req, res) => {
     return;
   }
 
-  const accessToken = jwt.sign(user, config.SECRET_KEY, {
+  const accessToken = jwt.sign({email: postData.email}, privateCert, {
+    algorithm: 'RS256',
     expiresIn: config.TOKEN_LIFE
   });
-  const refreshToken = jwt.sign(user, config.REFRESH_SECRET_KEY, {
+  const refreshToken = jwt.sign({email: postData.email}, privateCert, {
+    algorithm: 'RS256',
     expiresIn: config.REFRESH_TOKEN_LIFE
   });
 
@@ -75,7 +84,8 @@ server.post("/auth/token", (req, res) => {
       email: postData.email,
       name: postData.name
     };
-    const token = jwt.sign(user, config.SECRET_KEY, {
+    const token = jwt.sign({email: postData.email}, privateCert, {
+      algorithm: 'RS256',
       expiresIn: config.TOKEN_LIFE
     });
     const response = {
